@@ -192,121 +192,121 @@ with col1:
         st.info("Por favor, faça o upload de um arquivo de texto.")
 with col2:
     arquivo = st.file_uploader("Faça o upload do arquivo de texto", type=["txt", "csv"])
-
     if arquivo is not None:
         try:
             # Carregar o arquivo com pandas
             # Ajuste `sep` conforme necessário (ex.: '\t' para tabulação, ',' para vírgulas, etc.)
             dados = pd.read_csv(arquivo, sep='\t')
 
-        # Verificar se há pelo menos duas colunas no arquivo
-        if dados.shape[1] >= 2:
-            # Atribuir colunas a variáveis separadas
-            x = dados.iloc[:, 0]  # Primeira coluna
-            y = dados.iloc[:, 1]  # Segunda coluna
-            # Configurar parâmetros
-            fs = 30  # Taxa de amostragem em Hz
-            dt = 1 / fs  # Intervalo de tempo entre amostras
-
-            # Calcular o vetor temporal
-            t = np.arange(0, len(x) * dt, dt)
-
-            interp_func_x = interp1d(
-                t, x, kind='linear', fill_value="extrapolate")
-            interp_func_y = interp1d(
-                t, y, kind='linear', fill_value="extrapolate")
-
-            t_new = np.arange(t[0], t[-1], 1 / target_fs)
-            disp_x_interp = interp_func_x(t_new)
-            disp_y_interp = interp_func_y(t_new)
-
-            # Definir início da visualização após 10 segundos
-            for index, tempo in enumerate(t_new):
-                if tempo > 10:
-                    start = index
-                    break
-
-            # Aplicar o filtro Savitzky-Golay nos dados de deslocamento
-            x_smooth = savgol_filter(
-                disp_x_interp, window_length=5, polyorder=3)
-            y_smooth = savgol_filter(
-                disp_y_interp, window_length=5, polyorder=3)
-
-            # Calcular o vetor de velocidade (usando diferenças finitas para derivada)
-            vel_x = np.diff(x_smooth) / dt
-            vel_y = np.diff(y_smooth) / dt
-
-            # Adicionar uma última amostra ao vetor de velocidade para igualar o comprimento com o vetor de deslocamento
-            vel_x = np.append(vel_x, vel_x[-1])
-            vel_y = np.append(vel_y, vel_y[-1])
-            vel_norm = np.sum(np.sqrt(vel_x[start:] ** 2 + vel_y[start:] ** 2))
-
-            # Calcular o vetor de aceleração (derivada da velocidade)
-            acc_x = np.diff(vel_x) / dt
-            acc_y = np.diff(vel_y) / dt
-
-            # Adicionar uma última amostra ao vetor de aceleração para igualar o comprimento com o vetor de velocidade
-            acc_x = np.append(acc_x, acc_x[-1])
-            acc_y = np.append(acc_y, acc_y[-1])
-            acc_norm = np.sum(np.sqrt(acc_x[start:] ** 2 + acc_y[start:] ** 2))
-
-            # Plotar dados de deslocamento suavizados
-            fig = plt.figure()
-            plt.plot(t_new[start:], x_smooth[start:], 'r',
-                     label='Deslocamento X (Suavizado)')
-            plt.plot(t_new[start:], y_smooth[start:], 'g',
-                     label='Deslocamento Y (Suavizado)')
-            plt.legend()
-
-            st.pyplot(fig)
-
-            # Plotar dados de velocidade
-            fig = plt.figure()
-            plt.plot(t_new[start:], vel_x[start:], 'r', label='Velocidade X')
-            plt.plot(t_new[start:], vel_y[start:], 'g', label='Velocidade Y')
-            plt.legend()
-
-            st.pyplot(fig)
-
-            # Plotar dados de aceleração
-            fig = plt.figure()
-            plt.plot(t_new[start:], acc_x[start:], 'r', label='Aceleração X')
-            plt.plot(t_new[start:], acc_y[start:], 'g', label='Aceleração Y')
-            plt.legend()
-
-            st.pyplot(fig)
-
-            # Cálculo adicional de métricas
-            rms_x = np.sqrt(np.mean(x_smooth[start:3000] ** 2))
-            rms_y = np.sqrt(np.mean(y_smooth[start:3000] ** 2))
-            deviation = np.sum(
-                np.sqrt(x_smooth[start:] ** 2 + y_smooth[start:] ** 2))
-
-            rms_vel_x = np.sqrt(np.mean(vel_x[start:3000] ** 2))
-            rms_vel_y = np.sqrt(np.mean(vel_y[start:3000] ** 2))
-            mean_vel_x = np.mean(vel_x[start:3000])
-            mean_vel_y = np.mean(vel_y[start:3000])
-            deviation_vel = np.sum(vel_norm)
-
-            rms_acc_x = np.sqrt(np.mean(acc_x[start:3000] ** 2))
-            rms_acc_y = np.sqrt(np.mean(acc_y[start:3000] ** 2))
-            mean_acc_x = np.mean(acc_x[start:3000])
-            mean_acc_y = np.mean(acc_y[start:3000])
-            deviation_acc = np.sum(acc_norm)
-
-            st.write(f"RMS ML: {rms_x}")
-            st.write(f"RMS AP: {rms_y}")
-            st.write(f"Desvio Total: {deviation}")
-            st.write(f"RMS velocidade ML: {rms_vel_x}")
-            st.write(f"RMS velocidade AP: {rms_vel_y}")
-            st.write(f"Velocidade Média ML: {mean_vel_x}")
-            st.write(f"Velocidade Média AP: {mean_vel_y}")
-            st.write(f"Velocidade Média norma: {deviation_vel}")
-            st.write(f"Aceleração Média ML: {mean_acc_x}")
-            st.write(f"Aceleração Média AP: {mean_acc_y}")
-            st.write(f"Aceleração Média norma: {deviation_acc}")
-            st.write(f"RMS Aceleração ML: {rms_acc_x}")
-            st.write(f"RMS Aceleraçao AP: {rms_acc_y}")
-        
-    else:
-        st.info("Por favor, faça o upload de um arquivo TXT.")
+            # Verificar se há pelo menos duas colunas no arquivo
+            if dados.shape[1] >= 2:
+                # Atribuir colunas a variáveis separadas
+                x = dados.iloc[:, 0]  # Primeira coluna
+                y = dados.iloc[:, 1]  # Segunda coluna
+                # Configurar parâmetros
+                fs = 30  # Taxa de amostragem em Hz
+                dt = 1 / fs  # Intervalo de tempo entre amostras
+    
+                # Calcular o vetor temporal
+                t = np.arange(0, len(x) * dt, dt)
+    
+                interp_func_x = interp1d(
+                    t, x, kind='linear', fill_value="extrapolate")
+                interp_func_y = interp1d(
+                    t, y, kind='linear', fill_value="extrapolate")
+    
+                t_new = np.arange(t[0], t[-1], 1 / target_fs)
+                disp_x_interp = interp_func_x(t_new)
+                disp_y_interp = interp_func_y(t_new)
+    
+                # Definir início da visualização após 10 segundos
+                for index, tempo in enumerate(t_new):
+                    if tempo > 10:
+                        start = index
+                        break
+    
+                # Aplicar o filtro Savitzky-Golay nos dados de deslocamento
+                x_smooth = savgol_filter(
+                    disp_x_interp, window_length=5, polyorder=3)
+                y_smooth = savgol_filter(
+                    disp_y_interp, window_length=5, polyorder=3)
+    
+                # Calcular o vetor de velocidade (usando diferenças finitas para derivada)
+                vel_x = np.diff(x_smooth) / dt
+                vel_y = np.diff(y_smooth) / dt
+    
+                # Adicionar uma última amostra ao vetor de velocidade para igualar o comprimento com o vetor de deslocamento
+                vel_x = np.append(vel_x, vel_x[-1])
+                vel_y = np.append(vel_y, vel_y[-1])
+                vel_norm = np.sum(np.sqrt(vel_x[start:] ** 2 + vel_y[start:] ** 2))
+    
+                # Calcular o vetor de aceleração (derivada da velocidade)
+                acc_x = np.diff(vel_x) / dt
+                acc_y = np.diff(vel_y) / dt
+    
+                # Adicionar uma última amostra ao vetor de aceleração para igualar o comprimento com o vetor de velocidade
+                acc_x = np.append(acc_x, acc_x[-1])
+                acc_y = np.append(acc_y, acc_y[-1])
+                acc_norm = np.sum(np.sqrt(acc_x[start:] ** 2 + acc_y[start:] ** 2))
+    
+                # Plotar dados de deslocamento suavizados
+                fig = plt.figure()
+                plt.plot(t_new[start:], x_smooth[start:], 'r',
+                         label='Deslocamento X (Suavizado)')
+                plt.plot(t_new[start:], y_smooth[start:], 'g',
+                         label='Deslocamento Y (Suavizado)')
+                plt.legend()
+    
+                st.pyplot(fig)
+    
+                # Plotar dados de velocidade
+                fig = plt.figure()
+                plt.plot(t_new[start:], vel_x[start:], 'r', label='Velocidade X')
+                plt.plot(t_new[start:], vel_y[start:], 'g', label='Velocidade Y')
+                plt.legend()
+    
+                st.pyplot(fig)
+    
+                # Plotar dados de aceleração
+                fig = plt.figure()
+                plt.plot(t_new[start:], acc_x[start:], 'r', label='Aceleração X')
+                plt.plot(t_new[start:], acc_y[start:], 'g', label='Aceleração Y')
+                plt.legend()
+    
+                st.pyplot(fig)
+    
+                # Cálculo adicional de métricas
+                rms_x = np.sqrt(np.mean(x_smooth[start:3000] ** 2))
+                rms_y = np.sqrt(np.mean(y_smooth[start:3000] ** 2))
+                deviation = np.sum(
+                    np.sqrt(x_smooth[start:] ** 2 + y_smooth[start:] ** 2))
+    
+                rms_vel_x = np.sqrt(np.mean(vel_x[start:3000] ** 2))
+                rms_vel_y = np.sqrt(np.mean(vel_y[start:3000] ** 2))
+                mean_vel_x = np.mean(vel_x[start:3000])
+                mean_vel_y = np.mean(vel_y[start:3000])
+                deviation_vel = np.sum(vel_norm)
+    
+                rms_acc_x = np.sqrt(np.mean(acc_x[start:3000] ** 2))
+                rms_acc_y = np.sqrt(np.mean(acc_y[start:3000] ** 2))
+                mean_acc_x = np.mean(acc_x[start:3000])
+                mean_acc_y = np.mean(acc_y[start:3000])
+                deviation_acc = np.sum(acc_norm)
+    
+                st.write(f"RMS ML: {rms_x}")
+                st.write(f"RMS AP: {rms_y}")
+                st.write(f"Desvio Total: {deviation}")
+                st.write(f"RMS velocidade ML: {rms_vel_x}")
+                st.write(f"RMS velocidade AP: {rms_vel_y}")
+                st.write(f"Velocidade Média ML: {mean_vel_x}")
+                st.write(f"Velocidade Média AP: {mean_vel_y}")
+                st.write(f"Velocidade Média norma: {deviation_vel}")
+                st.write(f"Aceleração Média ML: {mean_acc_x}")
+                st.write(f"Aceleração Média AP: {mean_acc_y}")
+                st.write(f"Aceleração Média norma: {deviation_acc}")
+                st.write(f"RMS Aceleração ML: {rms_acc_x}")
+                st.write(f"RMS Aceleraçao AP: {rms_acc_y}")
+            else:
+                st.error("O arquivo precisa conter pelo menos duas colunas.")
+        except Exception as e:
+            st.error(f"Erro ao carregar o arquivo: {e}")
