@@ -191,20 +191,19 @@ with col1:
     else:
         st.info("Por favor, faça o upload de um arquivo de texto.")
 with col2:
-    uploaded_file = st.file_uploader(
-        "Faça o upload de um arquivo TXT com duas linhas de cabeçalho e duas colunas de dados numéricos", type="txt"
-    )
+    arquivo = st.file_uploader("Faça o upload do arquivo de texto", type=["txt", "csv"])
 
-    if uploaded_file is not None:
-        # Ler o arquivo CSV, ignorando as duas primeiras linhas do cabeçalho
-        data = pd.read_csv(uploaded_file, header=1)
+if arquivo is not None:
+    try:
+        # Carregar o arquivo com pandas
+        # Ajuste `sep` conforme necessário (ex.: '\t' para tabulação, ',' para vírgulas, etc.)
+        dados = pd.read_csv(arquivo, sep='\t')
 
-        # Verificar se o arquivo possui exatamente 2 colunas numéricas
-        if len(data.columns) == 2 and data.select_dtypes(include=['number']).shape[1] == 2:
-            # Separar as colunas em variáveis x e y
-            x = data.iloc[:, 0].values
-            y = data.iloc[:, 1].values
-
+        # Verificar se há pelo menos duas colunas no arquivo
+        if dados.shape[1] >= 2:
+            # Atribuir colunas a variáveis separadas
+            x = dados.iloc[:, 0]  # Primeira coluna
+            y = dados.iloc[:, 1]  # Segunda coluna
             # Configurar parâmetros
             fs = 30  # Taxa de amostragem em Hz
             dt = 1 / fs  # Intervalo de tempo entre amostras
