@@ -211,15 +211,27 @@ with col2:
 
             # Calcular o vetor temporal
             t = np.arange(0, len(x) * dt, dt)
+
+            interp_func_x = interp1d(
+                t, x, kind='linear', fill_value="extrapolate")
+            interp_func_y = interp1d(
+                t, y, kind='linear', fill_value="extrapolate")
+
+            t_new = np.arange(t[0], t[-1], 1 / target_fs)
+            disp_x_interp = interp_func_x(t_new)
+            disp_y_interp = interp_func_y(t_new)
+
             # Definir início da visualização após 10 segundos
-            for index, tempo in enumerate(t):
+            for index, tempo in enumerate(t_new):
                 if tempo > 10:
                     start = index
                     break
 
             # Aplicar o filtro Savitzky-Golay nos dados de deslocamento
-            x_smooth = savgol_filter(x, window_length=5, polyorder=3)
-            y_smooth = savgol_filter(y, window_length=5, polyorder=3)
+            x_smooth = savgol_filter(
+                disp_x_interp, window_length=5, polyorder=3)
+            y_smooth = savgol_filter(
+                disp_y_interp, window_length=5, polyorder=3)
 
             # Calcular o vetor de velocidade (usando diferenças finitas para derivada)
             vel_x = np.diff(x_smooth) / dt
@@ -241,9 +253,9 @@ with col2:
 
             # Plotar dados de deslocamento suavizados
             fig = plt.figure()
-            plt.plot(t[start:], x_smooth[start:], 'r',
+            plt.plot(t_new[start:], x_smooth[start:], 'r',
                      label='Deslocamento X (Suavizado)')
-            plt.plot(t[start:], y_smooth[start:], 'g',
+            plt.plot(t_new[start:], y_smooth[start:], 'g',
                      label='Deslocamento Y (Suavizado)')
             plt.legend()
 
@@ -251,16 +263,16 @@ with col2:
 
             # Plotar dados de velocidade
             fig = plt.figure()
-            plt.plot(t[start:], vel_x[start:], 'r', label='Velocidade X')
-            plt.plot(t[start:], vel_y[start:], 'g', label='Velocidade Y')
+            plt.plot(t_new[start:], vel_x[start:], 'r', label='Velocidade X')
+            plt.plot(t_new[start:], vel_y[start:], 'g', label='Velocidade Y')
             plt.legend()
 
             st.pyplot(fig)
 
             # Plotar dados de aceleração
             fig = plt.figure()
-            plt.plot(t[start:], acc_x[start:], 'r', label='Aceleração X')
-            plt.plot(t[start:], acc_y[start:], 'g', label='Aceleração Y')
+            plt.plot(t_new[start:], acc_x[start:], 'r', label='Aceleração X')
+            plt.plot(t_new[start:], acc_y[start:], 'g', label='Aceleração Y')
             plt.legend()
 
             st.pyplot(fig)
@@ -281,19 +293,19 @@ with col2:
             rms_acc_y = np.sqrt(np.mean(acc_y[start:3000] ** 2))
             mean_acc_x = np.mean(acc_x[start:3000])
             mean_acc_y = np.mean(acc_y[start:3000])
-            deviation_vel = np.sum(vel_norm)
+            deviation_acc = np.sum(acc_norm)
 
             st.write(f"RMS ML: {rms_x}")
             st.write(f"RMS AP: {rms_y}")
             st.write(f"Desvio Total: {deviation}")
-            st.write(f"RMS velocidade ML: {rms_x_vel_mobile}")
-            st.write(f"RMS velocidade AP: {rms_z_vel_mobile}")
-            st.write(f"Velocidade Média ML: {mean_vel_x_mobile}")
-            st.write(f"Velocidade Média AP: {mean_vel_z_mobile}")
-            st.write(f"Velocidade Média norma: {deviation_vel_mobile}")
-            st.write(f"Aceleração Média ML: {mean_acc_x_mobile}")
-            st.write(f"Aceleração Média AP: {mean_acc_z_mobile}")
-            st.write(f"Aceleração Média norma: {deviation_acc_mobile}")
+            st.write(f"RMS velocidade ML: {rms_vel_x}")
+            st.write(f"RMS velocidade AP: {rms_vel_y}")
+            st.write(f"Velocidade Média ML: {mean_vel_x}")
+            st.write(f"Velocidade Média AP: {mean_vel_y}")
+            st.write(f"Velocidade Média norma: {deviation_vel}")
+            st.write(f"Aceleração Média ML: {mean_acc_x}")
+            st.write(f"Aceleração Média AP: {mean_acc_y}")
+            st.write(f"Aceleração Média norma: {deviation_acc}")
             st.write(f"RMS Aceleração ML: {rms_acc_x}")
             st.write(f"RMS Aceleraçao AP: {rms_acc_y}")
         else:
