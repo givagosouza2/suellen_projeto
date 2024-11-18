@@ -193,11 +193,11 @@ with col1:
 with col2:
     arquivo = st.file_uploader("Faça o upload do arquivo de texto", type=["txt", "csv"])
 
-if arquivo is not None:
-    try:
-        # Carregar o arquivo com pandas
-        # Ajuste `sep` conforme necessário (ex.: '\t' para tabulação, ',' para vírgulas, etc.)
-        dados = pd.read_csv(arquivo, sep='\t')
+    if arquivo is not None:
+        try:
+            # Carregar o arquivo com pandas
+            # Ajuste `sep` conforme necessário (ex.: '\t' para tabulação, ',' para vírgulas, etc.)
+            dados = pd.read_csv(arquivo, sep='\t')
 
         # Verificar se há pelo menos duas colunas no arquivo
         if dados.shape[1] >= 2:
@@ -307,7 +307,6 @@ if arquivo is not None:
             st.write(f"Aceleração Média norma: {deviation_acc}")
             st.write(f"RMS Aceleração ML: {rms_acc_x}")
             st.write(f"RMS Aceleraçao AP: {rms_acc_y}")
-        else:
-            st.error("O arquivo deve conter exatamente 2 colunas numéricas.")
+        
     else:
-        st.info("Por favor, faça o upload de um arquivo CSV.")
+        st.info("Por favor, faça o upload de um arquivo TXT.")
