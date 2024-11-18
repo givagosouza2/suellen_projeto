@@ -192,7 +192,7 @@ with col1:
         st.info("Por favor, faça o upload de um arquivo de texto.")
 with col2:
     uploaded_file = st.file_uploader(
-        "Faça o upload de um arquivo CSV com duas linhas de cabeçalho e duas colunas de dados numéricos", type="csv"
+        "Faça o upload de um arquivo TXT com duas linhas de cabeçalho e duas colunas de dados numéricos", type="txt"
     )
 
     if uploaded_file is not None:
