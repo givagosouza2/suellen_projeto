@@ -197,7 +197,7 @@ with col2:
 
     if uploaded_file is not None:
         # Ler o arquivo CSV, ignorando as duas primeiras linhas do cabeçalho
-        data = pd.read_csv(uploaded_file, header=2)
+        data = pd.read_csv(uploaded_file, header=1)
 
         # Verificar se o arquivo possui exatamente 2 colunas numéricas
         if len(data.columns) == 2 and data.select_dtypes(include=['number']).shape[1] == 2:
